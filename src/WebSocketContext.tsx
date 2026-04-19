@@ -54,9 +54,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setConnecting(true);
 
     try {
-      // Point to the remote backend running on AWS
-      // const backendUrl = 'http://98.80.186.221:8080';
-      const backendUrl = 'http://98.80.186.221:8080';
+      // Point to the relative /ws path when deployed so Nginx proxies it, bypassing CORS!
+      const backendUrl = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
       const socket = new SockJS(`${backendUrl}/ws`);
       const StompObj = (Stomp as any).Stomp || Stomp;
       const client = StompObj.over(socket);
