@@ -1,0 +1,40 @@
+name: Deploy Frontend to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install and Build React App
+        run: |
+          npm install
+          npm run build
+
+      - name: Deploy to EC2 via SCP
+        run: |
+          echo "${{ secrets.AWS_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+          # 1. SSH in and create the target folder if it doesn't exist
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+            sudo mkdir -p /var/www/html/notification-gui
+            sudo chown -R $USER:$USER /var/www/html/notification-gui
+          EOF
+
+          # 2. SCP (Secure Copy) the newly built 'dist' files straight to the Nginx serving folder
+          scp -o StrictHostKeyChecking=no -i private_key.pem -r dist/* ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:/var/www/html/notification-gui/
+          
+          # Clean up the key
+          rm -f private_key.pem
