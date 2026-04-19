@@ -2,11 +2,11 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { WebSocketProvider, useWebSocket } from './WebSocketContext';
 import { 
   MessageCircle, Search, MoreVertical, Paperclip, Send, 
-  Smile, Mic, Check, CheckCheck, LogOut, Shield, User, 
-  Bell, Wifi, WifiOff, PlusCircle, ArrowLeft, Info, AlertTriangle, Loader2
+  Smile, Mic, CheckCheck, LogOut, Shield, User, 
+  Bell, ArrowLeft, AlertTriangle, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Message, WsUser } from './types';
+
 
 const formatTime = (timestamp: any) => {
   if (!timestamp) return '';

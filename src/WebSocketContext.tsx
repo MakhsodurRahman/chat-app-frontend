@@ -76,13 +76,13 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         client.send('/app/user', {}, JSON.stringify(user));
 
         // Subscribe to private messages
-        client.subscribe(`/topic/messages/${user.email}`, (res) => {
+        client.subscribe(`/topic/messages/${user.email}`, (res: any) => {
           const msg: Message = JSON.parse(res.body);
           addMessage(msg.senderEmail, msg);
         });
 
         // Subscribe to user list updates
-        client.subscribe('/topic/users', (res) => {
+        client.subscribe('/topic/users', (res: any) => {
           console.log('Received users list:', res.body);
           const users: WsUser[] = JSON.parse(res.body);
           setAllUsers(users);
