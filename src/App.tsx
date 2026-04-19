@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { WebSocketProvider, useWebSocket } from './WebSocketContext';
-import { 
-  MessageCircle, Search, MoreVertical, Paperclip, Send, 
-  Smile, Mic, CheckCheck, LogOut, Shield, User, 
+import {
+  MessageCircle, Search, MoreVertical, Paperclip, Send,
+  Smile, Mic, CheckCheck, LogOut, Shield, User,
   Bell, ArrowLeft, AlertTriangle, Loader2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 
 const formatTime = (timestamp: any) => {
@@ -40,11 +39,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen py-12 px-4 bg-gradient-to-br from-[#667eea] to-[#764ba2]">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full glass p-10 rounded-[2rem] shadow-2xl space-y-8"
-      >
+      <div className="max-w-md w-full glass p-10 rounded-[2rem] shadow-2xl space-y-8">
         <div className="text-center">
           <div className="bg-white/10 p-5 rounded-full w-fit mx-auto relative group">
              <div className="absolute -inset-2 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -85,19 +80,12 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <AnimatePresence>
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-start gap-3"
-              >
-                <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
-                <span className="text-xs text-red-300 leading-tight">{error}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
+              <span className="text-xs text-red-300 leading-tight">{error}</span>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -112,7 +100,7 @@ const Login: React.FC = () => {
             ) : 'Start Chatting'}
           </button>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 };
@@ -219,11 +207,10 @@ const App: React.FC = () => {
                 </div>
              ) : (
                 filteredUsers.map(user => (
-                    <motion.div 
+                    <div
                         key={user.email}
-                        whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedUserEmail(user.email)}
-                        className={`flex items-center px-4 py-3 cursor-pointer border-b border-gray-50 hover:bg-[#f5f6f6] transition-all relative ${selectedUserEmail === user.email ? 'bg-[#ebebeb] border-l-4 border-green-500' : ''}`}
+                        className={`flex items-center px-4 py-3 cursor-pointer border-b border-gray-50 hover:bg-[#f5f6f6] transition-all relative active:scale-[0.98] ${selectedUserEmail === user.email ? 'bg-[#ebebeb] border-l-4 border-green-500' : ''}`}
                     >
                         <div className="relative shrink-0">
                             <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm ${user.isActive ? 'bg-green-500' : 'bg-gray-400'}`}>
@@ -240,7 +227,7 @@ const App: React.FC = () => {
                             </div>
                             <p className="text-sm text-gray-500 truncate w-full">{user.email}</p>
                         </div>
-                    </motion.div>
+                    </div>
                 ))
              )}
           </div>
@@ -287,14 +274,12 @@ const App: React.FC = () => {
                     </span>
                 </div>
 
-                <AnimatePresence initial={false}>
+                <div>
                   {currentChat.map((msg, idx) => {
                     const isSent = msg.senderEmail === currentUser?.email;
                     return (
-                        <motion.div
+                        <div
                             key={msg.timestamp + idx}
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
                             className={`flex w-full mb-1 ${isSent ? 'justify-end' : 'justify-start'}`}
                         >
                             <div className={`max-w-[85%] md:max-w-[70%] lg:max-w-[60%] p-2 rounded-xl shadow-sm relative group ${isSent ? 'bg-[#dcf8c6] rounded-tr-none' : 'bg-white rounded-tl-none'}`}>
@@ -307,10 +292,10 @@ const App: React.FC = () => {
                                     {isSent && <CheckCheck className="h-3 w-3 text-blue-400" />}
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     );
                   })}
-                </AnimatePresence>
+                </div>
               </div>
 
               {/* Input Area */}
@@ -345,12 +330,9 @@ const App: React.FC = () => {
             <div className="hidden md:flex h-full w-full flex-col items-center justify-center bg-gray-50 border-white/40 glass text-center p-10">
                 <div className="relative group mb-10">
                    <div className="absolute -inset-4 bg-green-400/20 rounded-full blur-3xl scale-125"></div>
-                   <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 4 }}
-                   >
+                   <div className="animate-bounce">
                      <MessageCircle className="h-28 w-28 text-gray-200 relative" />
-                   </motion.div>
+                   </div>
                 </div>
                 <h1 className="text-3xl font-light text-gray-600 mb-3 tracking-tight">WhatsApp Web Pro</h1>
                 <p className="max-w-md text-gray-400 text-sm leading-relaxed mb-8">
