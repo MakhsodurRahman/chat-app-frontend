@@ -15,9 +15,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Build Frontend
+        run: |
+          npm install
+          npm run build
+
       - name: Create Deployment Package
         run: |
-          zip -r deploy.zip . -x "*.git*" "node_modules/*" "dist/*"
+          # Zip only the files needed for the lightweight production container
+          zip -r deploy.zip dist nginx.conf Dockerfile docker-entrypoint.sh
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

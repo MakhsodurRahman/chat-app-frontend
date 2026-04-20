@@ -1,18 +1,14 @@
-# Build stage
-FROM node:18-alpine as build-stage
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Production stage
 FROM nginx:stable-alpine
-COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Use the templates directory for automatic environment variable substitution
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy the pre-built dist folder from GitHub Actions
+COPY dist /usr/share/nginx/html
+
+# Copy the Nginx template and entrypoint script
+COPY nginx.conf /etc/nginx/nginx.conf.template
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 80
-# Use the official Nginx entrypoint (no manual CMD needed for envsubst)
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
