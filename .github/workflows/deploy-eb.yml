@@ -1,42 +1,31 @@
-name: Deploy Frontend to Elastic Beanstalk
+name: Deploy React App to AWS Elastic Beanstalk
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
-    
+
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: 22
 
-      - name: Build Frontend
-        run: |
-          npm install
-          npm run build
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build React App
+        run: npm run build
 
       - name: Create Deployment Package
-        run: |
-          # Zip only the files needed for the lightweight production container
-          zip -r deploy.zip dist nginx.conf Dockerfile docker-entrypoint.sh
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+        run: zip -r notification.zip build package.json package-lock.json -x "**.git**"
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
@@ -45,6 +34,9 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: messaging-frontend
           environment_name: messaging-frontend-prod
-          version_label: frontend-${{ github.sha }}
+          version_label: app-${{ github.sha }}
           region: us-east-1
-          deployment_package: deploy.zip
+          deployment_package: notification.zip
+
+      - name: Deployed!
+        run: echo App deployed to ELB

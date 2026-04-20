@@ -1,14 +1,26 @@
-FROM nginx:stable-alpine
+# =========================
+# Stage 1: Build React App
+# =========================
+FROM node:22-alpine AS build-stage
 
-# Copy the pre-built dist folder from GitHub Actions
-COPY dist /usr/share/nginx/html
+WORKDIR /app
 
-# Copy the Nginx template and entrypoint script
-COPY nginx.conf /etc/nginx/nginx.conf.template
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+
+# =========================
+# Stage 2: Production Nginx
+# =========================
+FROM nginx:1.22.1-alpine AS prod-stage
+
+# Copy build output (React/Vite -> dist OR CRA -> build)
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
