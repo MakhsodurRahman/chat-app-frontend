@@ -18,8 +18,11 @@ RUN npm run build
 # =========================
 FROM nginx:1.22.1-alpine AS prod-stage
 
-# Copy build output (React/Vite -> dist OR CRA -> build)
+# Copy build output (Vite -> dist)
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Copy Nginx config (includes backend proxy)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

@@ -25,7 +25,9 @@ jobs:
         run: npm run build
 
       - name: Create Deployment Package
-        run: zip -r notification.zip build package.json package-lock.json -x "**.git**"
+        # Zip everything AWS needs: Dockerfile + source code
+        # Dockerfile MUST be at the root of the zip for Docker platform to work
+        run: zip -r notification.zip . -x "**.git**" "node_modules/*"
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
