@@ -46,7 +46,7 @@ const Login: React.FC = () => {
             <MessageCircle className="h-14 w-14 text-green-400 relative" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">
-            WhatsApp Pro
+            Mak Messenger
           </h2>
           <p className="mt-2 text-sm text-white/60">
             Secure Real-time Messaging Hub
