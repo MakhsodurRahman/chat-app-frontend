@@ -1,43 +1,36 @@
-name: Deploy React App to AWS Elastic Beanstalk
+name: Deploy Frontend to S3 and CloudFront
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repo
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '18'
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies and Build
+        run: |
+          npm install
+          npm run build
 
-      - name: Build React App
-        run: npm run build
-
-      - name: Create Deployment Package
-        # Only zip what the lightweight Nginx Docker needs: the built files + config
-        run: zip -r notification.zip dist nginx.conf Dockerfile
-
-      - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: messaging-frontend
-          environment_name: messaging-frontend-prod
-          version_label: app-${{ github.sha }}
-          region: us-east-1
-          deployment_package: notification.zip
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Deployed!
-        run: echo App deployed to EB
+      - name: Deploy to S3 Bucket
+        run: aws s3 sync build/ s3://messaging-frontend-unique-id --delete
+
+      - name: Invalidate CloudFront Cache
+        run: aws cloudfront create-invalidation --distribution-id E16WTIGBKG6MFP --paths "/*"
