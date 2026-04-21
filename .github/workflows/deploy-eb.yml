@@ -30,7 +30,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy to S3 Bucket
-        run: aws s3 sync build/ s3://messaging-frontend-unique-id --delete
+        run: aws s3 sync dist/ s3://messaging-frontend-unique-id --delete
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id E16WTIGBKG6MFP --paths "/*"
